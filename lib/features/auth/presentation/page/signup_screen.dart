@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../controller/auth_controller.dart';
+
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
+  RegisterPage({super.key});
+
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +25,7 @@ class RegisterPage extends StatelessWidget {
             children: [
               const SizedBox(height: 40),
 
-              Text(
+              const Text(
                 "Create Account",
                 style: TextStyle(
                   fontSize: 28,
@@ -27,18 +36,16 @@ class RegisterPage extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              Text(
+              const Text(
                 "Sign up to get started",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF828282),
-                ),
+                style: TextStyle(fontSize: 14, color: Color(0xFF828282)),
               ),
 
               const SizedBox(height: 40),
 
               // Name
               TextField(
+                controller: nameController,
                 decoration: InputDecoration(
                   hintText: "Full Name",
                   filled: true,
@@ -54,6 +61,7 @@ class RegisterPage extends StatelessWidget {
 
               // Email
               TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   hintText: "Email",
                   filled: true,
@@ -69,6 +77,7 @@ class RegisterPage extends StatelessWidget {
 
               // Password
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Password",
@@ -89,13 +98,42 @@ class RegisterPage extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2F80ED),
+                    backgroundColor: const Color(0xFF2F80ED),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {},
-                  child: const Text("Register",style: TextStyle(color: Colors.white),),
+                  onPressed: () async {
+                    final name = nameController.text.trim();
+                    final email = emailController.text.trim();
+                    final password = passwordController.text.trim();
+
+                    //  Validation
+                    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+                      Get.snackbar(
+                        "Error",
+                        "All fields are required",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                      return;
+                    }
+
+                    try {
+                      await authController.register(email, password);
+
+                      context.go('/');
+                    } catch (e) {
+                      Get.snackbar(
+                        "Registration Failed",
+                        e.toString(),
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
+                  },
+                  child: const Text(
+                    "Register",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
 
@@ -104,7 +142,7 @@ class RegisterPage extends StatelessWidget {
               Center(
                 child: TextButton(
                   onPressed: () {
-                   context.go('/login');
+                    context.go('/login');
                   },
                   child: const Text(
                     "Already have an account? Login",

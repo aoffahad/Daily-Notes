@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../controller/auth_controller.dart';
+
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +24,7 @@ class LoginPage extends StatelessWidget {
             children: [
               const SizedBox(height: 40),
 
-              Text(
+              const Text(
                 "Welcome Back",
                 style: TextStyle(
                   fontSize: 28,
@@ -27,7 +35,7 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              Text(
+              const Text(
                 "Login to continue",
                 style: TextStyle(
                   fontSize: 14,
@@ -39,6 +47,7 @@ class LoginPage extends StatelessWidget {
 
               // Email
               TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   hintText: "Email",
                   filled: true,
@@ -54,6 +63,7 @@ class LoginPage extends StatelessWidget {
 
               // Password
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Password",
@@ -74,15 +84,43 @@ class LoginPage extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2F80ED),
+                    backgroundColor: const Color(0xFF2F80ED),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    context.go('/home-page');
+                  onPressed: () async {
+                    final email = emailController.text.trim();
+                    final password = passwordController.text.trim();
+
+                    //  Validation
+                    if (email.isEmpty || password.isEmpty) {
+                      Get.snackbar(
+                        "Error",
+                        "Email & Password required",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                      return;
+                    }
+
+                    try {
+                    
+                      await authController.login(email, password);
+
+                    
+                      context.go('/');
+                    } catch (e) {
+                      Get.snackbar(
+                        "Login Failed",
+                        e.toString(),
+                        snackPosition: SnackPosition.TOP,
+                      );
+                    }
                   },
-                  child: const Text("Login",style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
 
@@ -91,7 +129,7 @@ class LoginPage extends StatelessWidget {
               Center(
                 child: TextButton(
                   onPressed: () {
-                   context.go('/register');
+                    context.go('/register');
                   },
                   child: const Text(
                     "Don't have an account? Register",

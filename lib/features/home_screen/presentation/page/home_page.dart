@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../auth/presentation/controller/auth_controller.dart';
 import '../controller/note_controller.dart';
 import '../widget/note_card.dart';
 
@@ -10,6 +11,7 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final controller = Get.put(NotesController());
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,16 @@ class HomePage extends StatelessWidget {
         backgroundColor: AppColors.background,
         elevation: 0,
         title: const Text("Notes"),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await authController.logout();
+              context.go('/');
+            },
+            icon: Icon(Icons.logout),
+          ),
+        ],
       ),
 
       body: Obx(() {
@@ -77,7 +89,7 @@ class HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF2F80ED),
         onPressed: () {
-        context.push('/add-note');
+          context.push('/add-note');
         },
         child: const Icon(Icons.add),
       ),

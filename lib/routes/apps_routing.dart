@@ -1,8 +1,10 @@
 import 'package:daily_notes/features/home_screen/data/note_model.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
 
 import '../data/controller/main_controller/main_controller.dart';
+import '../features/auth/presentation/controller/auth_controller.dart';
 import '../features/auth/presentation/page/signup_screen.dart';
 import '../features/home_screen/presentation/controller/note_controller.dart';
 import '../features/home_screen/presentation/page/add_note_screen.dart';
@@ -12,6 +14,7 @@ import '../features/onboarding/presentation/pages/splash_screen.dart';
 import '../features/auth/presentation/page/login_scree.dart';
 
 final appController = Get.put(AppController());
+final auth = Get.put(AuthController());
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
@@ -20,35 +23,54 @@ final GoRouter router = GoRouter(
       path: '/',
       builder: (context, state) {
         return Obx(() {
-          return appController.isFirstLaunch.value
-              ? const OnboardingPage()
-              : const LoginPage();
+          if (appController.isFirstLaunch.value) {
+            return const OnboardingPage();
+          }
+
+          if (auth.user.value == null) {
+            return  LoginPage();
+          }
+
+          return HomePage();
         });
       },
     ),
-    GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+
+    GoRoute(path: '/login', builder: (context, state) =>  LoginPage()),
+
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterPage(),
+      builder: (context, state) =>  RegisterPage(),
     ),
-    GoRoute(path: '/home-page', builder: (context, state) => HomePage()),
-   GoRoute(
-  path: '/add-note',
-  builder: (context, state) => AddNotePage(),
-),
 
-GoRoute(
-  path: '/add-note/:id',
-  builder: (context, state) {
-    final id = state.pathParameters['id'];
+    GoRoute(
+      path: '/home-page',
+      builder: (context, state) => HomePage(),
+    ),
 
-    final controller = Get.find<NotesController>();
+    GoRoute(
+      path: '/add-note',
+      builder: (context, state) => AddNotePage(),
+    ),
 
-    final note = controller.notes.firstWhere((n) => n.id == id);
+    GoRoute(
+      path: '/add-note/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'];
+        final controller = Get.find<NotesController>();
 
-    return AddNotePage(note: note);
-  },
-),
+        final note = controller.notes.firstWhereOrNull((n) => n.id == id);
+
+        if (note == null) {
+          return const Scaffold(
+            body: Center(child: Text("Note not found")),
+          );
+        }
+
+        return AddNotePage(note: note);
+      },
+    ),
+
     GoRoute(
       path: '/note-details/:id',
       builder: (context, state) {
