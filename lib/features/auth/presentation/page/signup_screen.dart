@@ -121,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // 🔹 INPUT FIELD
+  //  INPUT FIELD
   Widget _buildInputField({
     required TextEditingController controller,
     required String hint,
@@ -150,7 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // 🔹 PASSWORD FIELD
+  //  PASSWORD FIELD
   Widget _buildPasswordField() {
     return TextField(
       controller: passwordController,
@@ -187,7 +187,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // 🔹 PASSWORD STRENGTH
+  //  PASSWORD STRENGTH
   Widget _buildPasswordStrength() {
     final password = passwordController.text;
 
@@ -230,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // 🔹 BUTTON
+  //  BUTTON
   Widget _buildButton() {
     return SizedBox(
       width: double.infinity,
@@ -253,7 +253,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // 🔹 REGISTER LOGIC
+  //  REGISTER LOGIC
   void _register() async {
     final name = nameController.text.trim();
     final email = emailController.text.trim();
@@ -282,7 +282,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  // 🔹 VALIDATION
+  //  VALIDATION
   String? _validateEmail(String value) {
     if (!GetUtils.isEmail(value)) {
       return "Enter a valid email";

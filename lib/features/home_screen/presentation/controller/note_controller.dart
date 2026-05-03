@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:get/get.dart';
 
 import '../../../auth/presentation/controller/auth_controller.dart';
@@ -11,33 +12,32 @@ class NotesController extends GetxController {
   var notes = <NoteModel>[].obs;
   var isLoading = false.obs;
 
-  Stream<List<NoteModel>>? _notesStream;
+  StreamSubscription<List<NoteModel>>? _subscription;
 
   @override
   void onInit() {
     super.onInit();
 
-    // ✅ Listen to auth changes
+  
     ever(_auth.user, (user) {
       if (user != null) {
         loadNotes();
       } else {
         notes.clear();
+        _subscription?.cancel();
       }
     });
   }
 
-  // ✅ Load notes safely
+  //  FIXED loadNotes
   void loadNotes() {
     final userId = _auth.userId;
-
     if (userId == null) return;
 
-    _notesStream?.listen(null)?.cancel(); // cancel old listener
+    // Cancel previous subscription safely
+    _subscription?.cancel();
 
-    _notesStream = _service.getNotes(userId);
-
-    _notesStream!.listen(
+    _subscription = _service.getNotes(userId).listen(
       (data) {
         notes.value = data;
       },
@@ -47,13 +47,12 @@ class NotesController extends GetxController {
     );
   }
 
-  // ✅ Add Note
+  //  Add Note
   Future<void> addNote(String title, String desc) async {
     try {
       isLoading.value = true;
 
       final userId = _auth.userId;
-
       if (userId == null) {
         Get.snackbar("Error", "User not logged in");
         return;
@@ -77,13 +76,12 @@ class NotesController extends GetxController {
     }
   }
 
-  // ✅ Update Note
+  //  Update Note
   Future<void> updateNote(String id, String title, String desc) async {
     try {
       isLoading.value = true;
 
       final userId = _auth.userId;
-
       if (userId == null) {
         Get.snackbar("Error", "User not logged in");
         return;
@@ -107,14 +105,24 @@ class NotesController extends GetxController {
     }
   }
 
-  // ✅ Delete Note
+  //  Delete Note
   Future<void> deleteNote(String id) async {
     try {
       await _service.deleteNote(id);
-
       Get.snackbar("Deleted", "Note removed");
     } catch (e) {
       Get.snackbar("Error", "Failed to delete note");
     }
+  }
+
+  void clearOnLogout() {
+  _subscription?.cancel();
+  notes.clear();
+}
+
+  @override
+  void onClose() {
+    _subscription?.cancel(); 
+    super.onClose();
   }
 }

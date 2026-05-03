@@ -27,10 +27,10 @@ class NoteModel {
   factory NoteModel.fromMap(String id, Map<String, dynamic> map) {
     return NoteModel(
       id: id,
-      userId: map['userId'],
-      title: map['title'],
-      description: map['description'],
-      colorIndex: map['colorIndex'],
+      userId: map['userId'] as String? ?? '',
+      title: map['title'] as String? ?? '',
+      description: map['description'] as String? ?? '',
+      colorIndex: map['colorIndex'] as int? ?? 0,
     );
   }
 }

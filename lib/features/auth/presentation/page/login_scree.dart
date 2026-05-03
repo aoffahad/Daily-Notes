@@ -25,10 +25,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // ✅ FIX overflow
+      resizeToAvoidBottomInset: true, 
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView( // ✅ FIX overflow
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 40),
 
-              // 🔹 Email
+              //  Email
               _buildInputField(
                 controller: emailController,
                 hint: "Email",
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 16),
 
-              // 🔹 Password
+              //  Password
               TextField(
                 controller: passwordController,
                 obscureText: _obscure,
@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscure = !_obscure; // ✅ FIX
+                        _obscure = !_obscure; 
                       });
                     },
                   ),
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 24),
 
-              // 🔹 Login Button
+              //  Login Button
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 16),
 
-              // 🔹 Register Redirect
+              //  Register Redirect
               TextButton(
                 onPressed: () => context.go('/register'),
                 child: const Text(
@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // 🔹 Reusable Input
+  //  Reusable Input
   Widget _buildInputField({
     required TextEditingController controller,
     required String hint,
@@ -173,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // 🔹 Login Logic
+  //  Login Logic
   void _login() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -192,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await authController.login(email, password);
 
-      context.go('/'); // router decides next
+      context.go('/'); 
     } catch (e) {
       Get.snackbar(
         "Login Failed",
@@ -204,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // 🔹 Email Validation
+  // Email Validation
   String? _validateEmail(String value) {
     if (!GetUtils.isEmail(value)) {
       return "Enter a valid email";

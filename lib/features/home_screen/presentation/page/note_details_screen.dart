@@ -14,7 +14,7 @@ class NoteDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<NotesController>();
 
-    final note = controller.notes.firstWhere((n) => n.id == noteId);
+   final note = controller.notes.firstWhereOrNull((n) => n.id == noteId);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -37,7 +37,7 @@ class NoteDetailsPage extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: () {
-                      context.go('/add-note/${note.id}');
+                      context.go('/add-note/${note!.id}');
                     },
                     child: const CircleAvatar(
                       backgroundColor: Colors.black26,
@@ -52,7 +52,7 @@ class NoteDetailsPage extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  note.title,
+                  note!.title,
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 24,

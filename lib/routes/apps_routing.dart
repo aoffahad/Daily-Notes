@@ -35,22 +35,13 @@ final GoRouter router = GoRouter(
       },
     ),
 
-    GoRoute(path: '/login', builder: (context, state) =>  LoginPage()),
+    GoRoute(path: '/login', builder: (context, state) => LoginPage()),
 
-    GoRoute(
-      path: '/register',
-      builder: (context, state) =>  RegisterPage(),
-    ),
+    GoRoute(path: '/register', builder: (context, state) => RegisterPage()),
 
-    GoRoute(
-      path: '/home-page',
-      builder: (context, state) => HomePage(),
-    ),
+    GoRoute(path: '/home-page', builder: (context, state) => HomePage()),
 
-    GoRoute(
-      path: '/add-note',
-      builder: (context, state) => AddNotePage(),
-    ),
+    GoRoute(path: '/add-note', builder: (context, state) => AddNotePage()),
 
     GoRoute(
       path: '/add-note/:id',
@@ -61,9 +52,7 @@ final GoRouter router = GoRouter(
         final note = controller.notes.firstWhereOrNull((n) => n.id == id);
 
         if (note == null) {
-          return const Scaffold(
-            body: Center(child: Text("Note not found")),
-          );
+          return const Scaffold(body: Center(child: Text("Note not found")));
         }
 
         return AddNotePage(note: note);
