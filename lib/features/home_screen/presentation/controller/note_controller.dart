@@ -11,30 +11,38 @@ class NotesController extends GetxController {
   var notes = <NoteModel>[].obs;
   var isLoading = false.obs;
 
+  Stream<List<NoteModel>>? _notesStream;
+
   @override
   void onInit() {
     super.onInit();
-    loadNotes();
+
+    // ✅ Listen to auth changes
+    ever(_auth.user, (user) {
+      if (user != null) {
+        loadNotes();
+      } else {
+        notes.clear();
+      }
+    });
   }
 
+  // ✅ Load notes safely
   void loadNotes() {
     final userId = _auth.userId;
 
-    if (userId == null) {
-      Get.snackbar("Error", "User not logged in");
-      return;
-    }
+    if (userId == null) return;
 
-    _service.getNotes(userId).listen(
+    _notesStream?.listen(null)?.cancel(); // cancel old listener
+
+    _notesStream = _service.getNotes(userId);
+
+    _notesStream!.listen(
       (data) {
         notes.value = data;
       },
       onError: (e) {
-        Get.snackbar(
-          "Error",
-          "Failed to load notes",
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        Get.snackbar("Error", "Failed to load notes");
       },
     );
   }
@@ -53,7 +61,7 @@ class NotesController extends GetxController {
 
       final note = NoteModel(
         id: '',
-        userId: userId, // 🔐 REQUIRED for security rules
+        userId: userId,
         title: title,
         description: desc,
         colorIndex: DateTime.now().millisecond % 5,
@@ -61,17 +69,9 @@ class NotesController extends GetxController {
 
       await _service.addNote(note);
 
-      Get.snackbar(
-        "Success",
-        "Note added",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Success", "Note added");
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Failed to add note",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Error", "Failed to add note");
     } finally {
       isLoading.value = false;
     }
@@ -91,7 +91,7 @@ class NotesController extends GetxController {
 
       final note = NoteModel(
         id: id,
-        userId: userId, // 🔐 MUST match Firestore rule
+        userId: userId,
         title: title,
         description: desc,
         colorIndex: DateTime.now().millisecond % 5,
@@ -99,17 +99,9 @@ class NotesController extends GetxController {
 
       await _service.updateNote(note);
 
-      Get.snackbar(
-        "Success",
-        "Note updated",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Success", "Note updated");
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Failed to update note",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Error", "Failed to update note");
     } finally {
       isLoading.value = false;
     }
@@ -120,17 +112,9 @@ class NotesController extends GetxController {
     try {
       await _service.deleteNote(id);
 
-      Get.snackbar(
-        "Deleted",
-        "Note removed",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Deleted", "Note removed");
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Failed to delete note",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Error", "Failed to delete note");
     }
   }
 }

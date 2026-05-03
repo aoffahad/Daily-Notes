@@ -1,4 +1,3 @@
-import 'package:daily_notes/features/home_screen/data/note_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
@@ -13,22 +12,22 @@ import '../features/home_screen/presentation/page/note_details_screen.dart';
 import '../features/onboarding/presentation/pages/splash_screen.dart';
 import '../features/auth/presentation/page/login_scree.dart';
 
-final appController = Get.put(AppController());
-final auth = Get.put(AuthController());
-
 final GoRouter router = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(
       path: '/',
       builder: (context, state) {
+        final appController = Get.find<AppController>();
+        final auth = Get.find<AuthController>();
+
         return Obx(() {
           if (appController.isFirstLaunch.value) {
             return const OnboardingPage();
           }
 
           if (auth.user.value == null) {
-            return  LoginPage();
+            return LoginPage();
           }
 
           return HomePage();
